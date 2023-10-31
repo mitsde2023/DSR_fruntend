@@ -73,10 +73,12 @@ function CounselorWiseSummary() {
     {
       Header: 'Team',
       accessor: 'Team',
+      width: 80,
     },
     {
       Header: 'Status',
       accessor: 'Status',
+      width: 70,
     },
     {
       Header: 'Target',
@@ -91,6 +93,7 @@ function CounselorWiseSummary() {
     {
       Header: 'Collected Revenue',
       accessor: 'CollectedRevenue',
+      width: 80,
       Cell: ({ value }) => {
         return <div>{value}</div>;
       },
@@ -113,6 +116,7 @@ function CounselorWiseSummary() {
     {
       Header: 'BilledRevenue',
       accessor: 'BilledRevenue',
+      width: 80,
       Cell: ({ value }) => {
         return <div>{value}</div>;
       },
@@ -133,12 +137,14 @@ function CounselorWiseSummary() {
       },
     },
     {
-      Header: 'Total Lead',
+      Header: 'T-Lead',
       accessor: 'TotalLead',
+      width: 50,
     },
     {
       Header: '% Achievement',
       accessor: 'Admissions',
+      width: 80,
       Cell: ({ original }) => {
         const achievement = calculateAchievement(original);
         const cellColor = achievement >= 100 ? 'green' : 'red';
@@ -169,10 +175,12 @@ function CounselorWiseSummary() {
     {
       Header: 'Conversion%',
       accessor: 'Admissions',
+      width: 70,
       Cell: ({ original }) => calculateConversion(original),
     },
     {
       Header: 'C.PSR',
+      width: 60,
       accessor: (row) => {
         const collectedRevenue = row.CollectedRevenue;
         const admissions = row.Admissions;
@@ -186,6 +194,7 @@ function CounselorWiseSummary() {
     },
     {
       Header: 'B.PSR',
+      width: 60,
       accessor: (row) => {
         const billedRevenue = row.BilledRevenue;
         const admissions = row.Admissions;
@@ -198,12 +207,14 @@ function CounselorWiseSummary() {
       id: 'bpsr', // Unique ID for the 'B.PSR' column
     },
     {
-      Header: 'Connected Call',
+      Header: 'C-Call',
       accessor: 'ConnectedCall',
+      width: 50,
     },
     {
       Header: 'Talk Time',
       accessor: 'TalkTime',
+      width: 70,
       Cell: ({ value }) => {
         const time = value.split(' ')[1];
         return <span>{time}</span>;
@@ -212,10 +223,12 @@ function CounselorWiseSummary() {
     {
       Header: 'Final',
       accessor: 'Final',
+      width: 100,
     },
     {
       Header: 'Group',
       accessor: 'Group',
+      width: 50,
     },
     {
       Header: 'CounselorWiseSummaries',
@@ -224,7 +237,7 @@ function CounselorWiseSummary() {
         <select>
           {original.CounselorWiseSummaries.map((summary, index) => (
             <option key={index}>
-              {`${summary.AmountReceived}/${summary.AmountBilled}`}
+              {`${summary.AmountReceived}/${summary.AmountBilled}/${summary.Specialization}`}
             </option>
           ))}
         </select>

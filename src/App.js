@@ -1,6 +1,8 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import CounselorWiseSummary from './dsr/CounselorWiseSummary';
+import OverallSummary from './dsr/OverallSummary';
+// import DataTableReact from './dsr/DataTableReact';
 function App() {
 
 
@@ -14,11 +16,7 @@ function App() {
           <Routes>
             <Route></Route>
             <Route exact path="/" element={<CounselorWiseSummary />} />
-            {/* <Route exact path="/question" element={<AddQuestionForm />} />
-        <Route exact path="/Addquestion" element={<AddQuestionPage />} />
-        <Route exact path="/allbets" element={<AllBets />} />
-        <Route exact path="/allmatches" element={<AllMatch />} />
-        <Route exact path="/allmatches/:id" element={<AllMatchesById />} /> */}
+            <Route exact path="/overall" element={<OverallSummary />} />
           </Routes>
 
         </BrowserRouter>
