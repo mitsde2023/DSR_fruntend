@@ -19,3 +19,21 @@ code {
   font-weight: bold;
 }
 
+
+/* Add this CSS class to your stylesheet */
+.two-fields-row {
+  background-color: #e3e69a; /* Set your desired background color */
+}
+.one-fields-row{
+  background-color: #e4ceb6;
+  font-weight: bold;
+  border: 1px solid black;
+
+}
+.last-row {
+  background-color: #bd5409 !important;
+  font-weight: bold;
+  color: white;
+  border: 1px solid black;
+}
+

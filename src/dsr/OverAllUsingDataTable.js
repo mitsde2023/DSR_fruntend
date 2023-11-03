@@ -9,25 +9,17 @@ function OverAllUsingDataTable() {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:7000/dsr_report/react-table-data');
-                setData(response.data);
+                const allRows = response.data;
+                const lastTwoRows = allRows.slice(0, -2); // Remove the last two rows
+                const lastRow = allRows.slice(-1); // Get the last row
+
+                setData(lastTwoRows.concat(lastRow));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
         fetchData();
     }, []);
-
-    const calculateRank = (name, admissions, uniqueNames) => {
-        if (uniqueNames.includes(name)) {
-            const sortedData = data
-                .filter(row => row.AsstManager === name || row.TeamManager === name || row.TeamLeader === name)
-                .sort((a, b) => b.Admissions - a.Admissions);
-            return sortedData.indexOf(data.find(row => row === sortedData[sortedData.length - 1])) + 1;
-        }
-        return '';
-    };
-
-    const uniqueNames = Array.from(new Set(data.map(row => row.AsstManager || row.TeamManager || row.TeamLeader)));
 
     const columns = React.useMemo(
         () => [
@@ -80,16 +72,17 @@ function OverAllUsingDataTable() {
                         const admissions = rowInfo.original.Admissions;
                         const uniqueAdmissions = [...new Set(state.sortedData.map(row => row._original.Admissions))];
                         uniqueAdmissions.sort((a, b) => b - a);
-                
+
                         const maxAdmissions = uniqueAdmissions[0];
-                        const thirdMaxAdmissions = uniqueAdmissions[2];
-                
+                        // const thirdMaxAdmissions = uniqueAdmissions[2];
+                        const thirdMaxAdmissions = uniqueAdmissions[3];
+
                         if (admissions === maxAdmissions) {
                             return {};
                         }
-                
+
                         const percentage = (admissions / thirdMaxAdmissions).toFixed(2);
-                
+
                         return {
                             style: {
                                 background: `linear-gradient(90deg, rgba(0, 128, 0, ${percentage}), transparent)`,
@@ -105,13 +98,13 @@ function OverAllUsingDataTable() {
                 accessor: '%Achieve',
                 width: 70,
                 Cell: ({ value }) => {
-                    return <div style={{color:"white"}}>{value}%</div>;
+                    return <div style={{ color: "white" }}>{value}%</div>;
                 },
                 getProps: (state, rowInfo, column) => {
                     if (rowInfo && rowInfo.original) {
                         const percentageAchieve = parseFloat(rowInfo.original['%Achieve']);
                         let backgroundColor = '';
-                        
+
                         if (percentageAchieve === 50) {
                             backgroundColor = '#f0b624';
                         } else if (percentageAchieve < 50) {
@@ -121,7 +114,7 @@ function OverAllUsingDataTable() {
                         } else if (percentageAchieve >= 100) {
                             backgroundColor = 'green';
                         }
-                
+
                         // Check if the row is not the last row (Grand Total)
                         if (rowInfo.viewIndex !== state.sortedData.length - 1) {
                             return {
@@ -133,9 +126,9 @@ function OverAllUsingDataTable() {
                     }
                     return {};
                 },
-                
+
             },
-    
+
             {
                 Header: 'T-Lead',
                 accessor: 'T-Lead',
@@ -183,43 +176,55 @@ function OverAllUsingDataTable() {
             },
             {
                 Header: 'Rank',
-                accessor: row => calculateRank(row.AsstManager || row.TeamManager || row.TeamLeader, row.Admissions, uniqueNames),
-                id: 'rank',
-                width: 70,
-                Cell: ({ value }) => {
-                    return <div>{value}</div>;
-                },
+                accessor: 'Rank',
+                width: 50,
                 getProps: (state, rowInfo, column) => {
                     if (rowInfo && rowInfo.original) {
-                        const name = rowInfo.original.AsstManager || rowInfo.original.TeamManager || rowInfo.original.TeamLeader;
-                        let backgroundColor = '';
+                        const rolesPresent = ['AsstManager', 'TeamManager', 'TeamLeader'].filter(
+                            (role) => rowInfo.original[role]
+                        );
 
-                        if (uniqueNames.includes(name)) {
-                            backgroundColor = 'green';
-                        } else {
-                            backgroundColor = 'red';
+                        let backgroundColor = 'red'; // Default background color for one field parent
+
+                        if (rolesPresent.length === 3 && rowInfo.original.Rank < 4) {
+                            backgroundColor = 'green'; // If 3 fields present and Rank < 4, set to green
+                        } else if (rolesPresent.length === 2) {
+                            backgroundColor = '#f0ab0a';
+                        } else if (rolesPresent.length === 1) {
+                            backgroundColor = '#25f21b';
                         }
 
-                        return {
-                            style: {
-                                background: backgroundColor,
-                            },
-                        };
-                    } else {
-                        return {};
+                        if (rowInfo.viewIndex !== state.sortedData.length - 1) {
+                            return {
+                                style: {
+                                    background: backgroundColor,
+                                    color: "white"
+                                },
+                            };
+                        }
+                        if (rowInfo.viewIndex !== state.sortedData.length - 0) {
+                            return {
+                                style: {
+                                    background: "white",
+                                    color: "white"
+                                },
+                            };
+                        }
                     }
+
+                    return {};
                 },
             },
+
+
         ],
-        [data, uniqueNames]
+        [data]
     );
 
-    // Filter data to include only AsstManager rows
     const filteredData = data.filter(
         (row) => row.AsstManager && !row.TeamManager && !row.TeamLeader
     );
 
-    // Calculate the grand total for the filtered data
     const grandTotal = {
         AsstManager: 'Grand Total',
         TeamManager: '',
@@ -255,8 +260,7 @@ function OverAllUsingDataTable() {
         grandTotal['PCE'] = parseFloat(row['PCE']);
     });
 
-    // Calculate averages
-    // const count = filteredData.length;
+
     grandTotal['%Achieve'] = ((grandTotal.Admissions / grandTotal.Target) * 100).toFixed(2);
     grandTotal['Conversion%'] = ((grandTotal.Admissions / grandTotal['T-Lead']) * 100).toFixed(2);
     grandTotal['C_PSR'] = (grandTotal['Coll-Revenue'] / grandTotal.Admissions).toFixed(2)
@@ -265,11 +269,12 @@ function OverAllUsingDataTable() {
     grandTotal['B_PCR'] = (grandTotal['Bill-Revenue'] / grandTotal.TeamLeaderCounselorCount).toFixed(2)
     grandTotal['PCE'] = (grandTotal.Admissions / grandTotal.TeamLeaderCounselorCount).toFixed(2)
 
+    const tableData = data.concat(grandTotal);
 
     return (
         <>
             <ReactTable
-                data={data.concat(grandTotal)}
+                data={tableData}
                 columns={columns}
                 defaultPageSize={42}
                 pageSizeOptions={[10, 20, 50, 100]}
@@ -280,9 +285,48 @@ function OverAllUsingDataTable() {
                     className: 'custom-header',
                 })}
                 className="-striped -highlight custom-table p-2"
+                // getTrProps={(state, rowInfo) => {
+                //     if (rowInfo && rowInfo.index === tableData.length - 1) {
+                //         return {
+                //             className: 'last-row',
+                //         };
+                //     }
+                //     return {};
+                // }}
+                getTrProps={(state, rowInfo) => {
+                    if (rowInfo) {
+                        const rolesPresent = ['AsstManager', 'TeamManager', 'TeamLeader'].filter(
+                            (role) => rowInfo.original[role]
+                        );
+
+                        if (rolesPresent.length === 2) {
+                            return {
+                                className: 'two-fields-row',
+                            };
+                        }
+                        if (rolesPresent.length === 1) {
+                            return {
+                                className: 'one-fields-row',
+                            };
+                        }
+                        if (rolesPresent.length === 0) {
+                            return {
+                                className: 'one-fields-row',
+                            };
+                        }
+                        return {};
+                    }
+
+                    if (rowInfo && rowInfo.index === tableData.length - 1) {
+                        return {
+                            className: 'last-row',
+                        };
+                    }
+                    return {};
+                    return {};
+                }}
             />
         </>
     );
 }
-
 export default OverAllUsingDataTable;
