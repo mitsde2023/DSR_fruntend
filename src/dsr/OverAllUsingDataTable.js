@@ -26,34 +26,73 @@ function OverAllUsingDataTable() {
             {
                 Header: 'Asst. Manager',
                 accessor: 'AsstManager',
-                width: 80,
+                width: 130,
                 Cell: (row) => {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.AsstManager === data[row.index - 1].AsstManager;
-                    return isSameAsPrevious ? null : row.value;
+            
+                    const isSameAsNext =
+                        row.index < data.length - 1 &&
+                        row.original.AsstManager === data[row.index + 1].AsstManager;
+            
+                    if (isSameAsPrevious && !isSameAsNext) {
+                        const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
+                        const cellValue = row.value ? `Total ${row.value}` : ``;
+            
+                        return (
+                            <div className={cellClassName}>
+                                {cellValue}
+                            </div>
+                        );
+                    } else if (isSameAsPrevious) {
+                        return null;
+                    }
+            
+                    return row.value;
                 },
             },
             {
                 Header: 'Team Manager',
                 accessor: 'TeamManager',
-                width: 120,
+                width: 140,
                 Cell: (row) => {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.TeamManager === data[row.index - 1].TeamManager;
-                    return isSameAsPrevious ? null : row.value;
+            
+                    const isSameAsNext =
+                        row.index < data.length - 1 &&
+                        row.original.TeamManager === data[row.index + 1].TeamManager;
+            
+                    if (isSameAsPrevious && !isSameAsNext) {
+                        const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
+                        const cellValue = row.value ? `Total ${row.value}` : `Total`;
+            
+                        return (
+                            <div className={cellClassName}>
+                                {cellValue}
+                            </div>
+                        );
+                    } else if (isSameAsPrevious) {
+                        return null;
+                    }
+            
+                    return row.value;
                 },
-            },
+            }
+            
+            
+            ,
             {
                 Header: 'Team Leader',
                 accessor: 'TeamLeader',
                 width: 130,
             },
             {
-                Header: 'H-count',
+                Header: 'count',
                 accessor: 'TeamLeaderCounselorCount',
-                width: 70,
+                width: 50,
             },
             {
                 Header: 'Target',
@@ -135,19 +174,19 @@ function OverAllUsingDataTable() {
                 width: 50,
             },
             {
-                Header: 'Conversion%',
+                Header: 'Con%',
                 accessor: 'Conversion%',
-                width: 100,
+                width: 70,
             },
             {
-                Header: 'Coll-Revenue',
+                Header: 'Coll-Reve',
                 accessor: 'Coll-Revenue',
-                width: 90,
+                width: 80,
             },
             {
-                Header: 'Bill-Revenue',
+                Header: 'Bill-Reve',
                 accessor: 'Bill-Revenue',
-                width: 90
+                width: 80
             },
             {
                 Header: 'C_PSR',

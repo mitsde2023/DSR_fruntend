@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table-6';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import 'react-table-6/react-table.css';
 import * as XLSX from 'xlsx';
@@ -289,6 +290,11 @@ function CounselorWiseSummary() {
 
   return (
     <div className='m-2'>
+      <div className='d-flex'>
+        <button className='btn btn-primary'><Link className='text-white' to={'/overall-Data-Table'}>Overall</Link></button>
+        <button className='btn btn-primary'></button>
+        <button className='btn btn-primary'></button>
+      </div>
       <ReactTable
         data={data}
         columns={columns}
