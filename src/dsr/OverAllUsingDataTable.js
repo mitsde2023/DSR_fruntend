@@ -1,7 +1,9 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
+import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 function OverAllUsingDataTable() {
     const [data, setData] = useState([]);
@@ -26,34 +28,73 @@ function OverAllUsingDataTable() {
             {
                 Header: 'Asst. Manager',
                 accessor: 'AsstManager',
-                width: 80,
+                width: 130,
                 Cell: (row) => {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.AsstManager === data[row.index - 1].AsstManager;
-                    return isSameAsPrevious ? null : row.value;
+            
+                    const isSameAsNext =
+                        row.index < data.length - 1 &&
+                        row.original.AsstManager === data[row.index + 1].AsstManager;
+            
+                    if (isSameAsPrevious && !isSameAsNext) {
+                        const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
+                        const cellValue = row.value ? `Total ${row.value}` : ``;
+            
+                        return (
+                            <div className={cellClassName}>
+                                {cellValue}
+                            </div>
+                        );
+                    } else if (isSameAsPrevious) {
+                        return null;
+                    }
+            
+                    return row.value;
                 },
             },
             {
                 Header: 'Team Manager',
                 accessor: 'TeamManager',
-                width: 120,
+                width: 140,
                 Cell: (row) => {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.TeamManager === data[row.index - 1].TeamManager;
-                    return isSameAsPrevious ? null : row.value;
+            
+                    const isSameAsNext =
+                        row.index < data.length - 1 &&
+                        row.original.TeamManager === data[row.index + 1].TeamManager;
+            
+                    if (isSameAsPrevious && !isSameAsNext) {
+                        const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
+                        const cellValue = row.value ? `Total ${row.value}` : `Total`;
+            
+                        return (
+                            <div className={cellClassName}>
+                                {cellValue}
+                            </div>
+                        );
+                    } else if (isSameAsPrevious) {
+                        return null;
+                    }
+            
+                    return row.value;
                 },
-            },
+            }
+            
+            
+            ,
             {
                 Header: 'Team Leader',
                 accessor: 'TeamLeader',
                 width: 130,
             },
             {
-                Header: 'H-count',
+                Header: 'count',
                 accessor: 'TeamLeaderCounselorCount',
-                width: 70,
+                width: 50,
             },
             {
                 Header: 'Target',
@@ -135,19 +176,19 @@ function OverAllUsingDataTable() {
                 width: 50,
             },
             {
-                Header: 'Conversion%',
+                Header: 'Con%',
                 accessor: 'Conversion%',
-                width: 100,
+                width: 70,
             },
             {
-                Header: 'Coll-Revenue',
+                Header: 'Coll-Reve',
                 accessor: 'Coll-Revenue',
-                width: 90,
+                width: 80,
             },
             {
-                Header: 'Bill-Revenue',
+                Header: 'Bill-Reve',
                 accessor: 'Bill-Revenue',
-                width: 90
+                width: 80
             },
             {
                 Header: 'C_PSR',
@@ -220,6 +261,67 @@ function OverAllUsingDataTable() {
         ],
         [data]
     );
+
+    const exportToExcel = () => {
+        const header = columns.map((column) => column.Header);
+        const dataToExport = tableData.map((row) => columns.map((column) => row[column.accessor]));
+      
+        const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      
+        XLSX.writeFile(wb, 'Overall.xlsx');
+      };
+     
+    // const exportToExcel = () => {
+    //     const header = columns.map((column) => column.Header);
+    //     const dataToExport = tableData.map((row) => columns.map((column) => row[column.accessor]));
+      
+    //     const wb = XLSX.utils.book_new();
+      
+    //     // Create a worksheet
+    //     const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
+      
+    //     // Custom cell styling for header
+    //     const headerStyle = {
+    //       fill: { fgColor: { rgb: 'FFFF00' } }, // Yellow background color
+    //       font: { bold: true }, // Bold text
+    //     };
+      
+    //     // Custom cell styling for "% Achieve" column
+    //     const percentAchieveStyle = {
+    //       fill: { fgColor: { rgb: 'FF0000' } }, // Red background color
+    //     };
+      
+    //     const range = XLSX.utils.decode_range(ws['!ref']);
+      
+    //     // Apply styling to headers
+    //     for (let C = range.s.c; C <= range.e.c; ++C) {
+    //       const headerCell = XLSX.utils.encode_cell({ r: range.s.r, c: C });
+    //       ws[headerCell].s = headerStyle;
+    //     }
+      
+    //     // Find the index of the "% Achieve" column
+    //     const percentAchieveColumnIndex = columns.findIndex((column) => column.Header === '% Achieve');
+      
+    //     // Apply styling to the "% Achieve" column
+    //     if (percentAchieveColumnIndex !== -1) {
+    //       for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+    //         const percentAchieveCell = XLSX.utils.encode_cell({ r: R, c: percentAchieveColumnIndex });
+    //         ws[percentAchieveCell].s = percentAchieveStyle;
+    //       }
+    //     }
+      
+    //     // Add the worksheet to the workbook
+    //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      
+    //     // Save the workbook to a file
+    //     XLSX.writeFile(wb, 'exported-data.xlsx');
+    //   };
+      
+
+
+
 
     const filteredData = data.filter(
         (row) => row.AsstManager && !row.TeamManager && !row.TeamLeader
@@ -323,9 +425,11 @@ function OverAllUsingDataTable() {
                         };
                     }
                     return {};
-                    return {};
+                   
                 }}
             />
+            <button onClick={exportToExcel}>Export to Excel</button>
+
         </>
     );
 }

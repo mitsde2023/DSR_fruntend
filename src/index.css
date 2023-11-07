@@ -12,7 +12,7 @@ code {
     monospace;
 }
 .custom-table {
-  font-size: 12px;
+  font-size: 11px;
   color:"#00000"
 }
 .custom-header {
@@ -31,9 +31,47 @@ code {
 
 }
 .last-row {
-  background-color: #bd5409 !important;
+  background-color: #d3b5a0 !important;
   font-weight: bold;
-  color: white;
+  color: black;
   border: 1px solid black;
 }
 
+
+
+
+.total-cell {
+  color: blue;
+  border: 1px solid #000;
+  font-weight: bold;
+}
+
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: yellow; 
+  z-index: 1; 
+}
+
+
+.table-container {
+  width: 100%; /* Make the container 100% wide */
+  overflow-x: auto; /* Enable horizontal scrolling */
+}
+
+/* Define the width for the first column to make it sticky */
+.react-table-6 .rt-th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: white; /* Ensure it covers the entire height of the table */
+}
+
+/* Adjust the width of the remaining columns to match the first column */
+.react-table-6 .rt-th:not(:first-child) {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: white; /* Ensure it covers the entire height of the table */
+}
