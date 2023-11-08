@@ -42,12 +42,16 @@ function CounselorWiseSummary() {
       return `${percentage}%`;
     }
   };
+
+
+
   const columns = [
     {
       Header: 'Counselor',
       accessor: 'Counselor',
       width: 120,
-      fixed: 'left',
+      fixed: 'sticky',
+      sticky: 'sticky',
     },
     {
       Header: 'Team Leaders',
@@ -65,12 +69,6 @@ function CounselorWiseSummary() {
       Cell: ({ value }) => value === 'Jayjeet Deshmukh' ? 'JD' : value,
       width: 50,
     },
-
-    // {
-    //   Header: 'Role',
-    //   accessor: 'Role',
-    //   width: 100,
-    // },
     {
       Header: 'Team',
       accessor: 'Team',
@@ -250,7 +248,6 @@ function CounselorWiseSummary() {
   const [excelData, setExcelData] = useState(data);
 
   const exportToExcel = () => {
-    // Create an array of data for export
     const dataToExport = data.map(item => ({
       'Counselor': item.Counselor,
       'Team Leaders': item.TeamLeaders,
@@ -289,11 +286,13 @@ function CounselorWiseSummary() {
 
 
   return (
+
     <div className='m-2'>
       <div className='d-flex'>
-        <button className='btn btn-primary'><Link className='text-white' to={'/overall-Data-Table'}>Overall</Link></button>
-        <button className='btn btn-primary'></button>
-        <button className='btn btn-primary'></button>
+        <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall</Link></button>
+        <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
+        <button className='btn btn-primary ms-2'><Link className='text-white' to={'/tltm'}>Counselor</Link></button>
+
       </div>
       <ReactTable
         data={data}
@@ -303,10 +302,13 @@ function CounselorWiseSummary() {
         getTheadThProps={(state, rowInfo, column) => ({
           style: {
             backgroundColor: 'yellow',
+            position:'sticky',
+            top: '0',
+            zIndex:'1'
           },
-          className: 'custom-header', // Apply the custom header class
+          className: 'custom-header', 
         })}
-        className="-striped -highlight custom-table" // Apply your custom class here
+        className="-striped -highlight custom-table" 
       />
 
       <button onClick={exportToExcel}>Export to Excel</button>
@@ -314,4 +316,4 @@ function CounselorWiseSummary() {
   )
 }
 
-export default CounselorWiseSummary
+export default CounselorWiseSummary;
