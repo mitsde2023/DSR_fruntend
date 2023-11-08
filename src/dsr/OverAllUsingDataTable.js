@@ -4,6 +4,7 @@ import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import DataTableReact from './DataTableReact';
 
 function OverAllUsingDataTable() {
     const [data, setData] = useState([]);
@@ -33,15 +34,15 @@ function OverAllUsingDataTable() {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.AsstManager === data[row.index - 1].AsstManager;
-            
+
                     const isSameAsNext =
                         row.index < data.length - 1 &&
                         row.original.AsstManager === data[row.index + 1].AsstManager;
-            
+
                     if (isSameAsPrevious && !isSameAsNext) {
                         const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
                         const cellValue = row.value ? `Total ${row.value}` : ``;
-            
+
                         return (
                             <div className={cellClassName}>
                                 {cellValue}
@@ -50,7 +51,7 @@ function OverAllUsingDataTable() {
                     } else if (isSameAsPrevious) {
                         return null;
                     }
-            
+
                     return row.value;
                 },
             },
@@ -62,15 +63,15 @@ function OverAllUsingDataTable() {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.TeamManager === data[row.index - 1].TeamManager;
-            
+
                     const isSameAsNext =
                         row.index < data.length - 1 &&
                         row.original.TeamManager === data[row.index + 1].TeamManager;
-            
+
                     if (isSameAsPrevious && !isSameAsNext) {
                         const cellClassName = isSameAsPrevious && !isSameAsNext ? 'total-cell' : '';
                         const cellValue = row.value ? `Total ${row.value}` : `Total`;
-            
+
                         return (
                             <div className={cellClassName}>
                                 {cellValue}
@@ -79,12 +80,12 @@ function OverAllUsingDataTable() {
                     } else if (isSameAsPrevious) {
                         return null;
                     }
-            
+
                     return row.value;
                 },
             }
-            
-            
+
+
             ,
             {
                 Header: 'Team Leader',
@@ -265,45 +266,45 @@ function OverAllUsingDataTable() {
     const exportToExcel = () => {
         const header = columns.map((column) => column.Header);
         const dataToExport = tableData.map((row) => columns.map((column) => row[column.accessor]));
-      
+
         const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      
-        XLSX.writeFile(wb, 'Overall.xlsx');
-      };
-     
+
+        XLSX.writeFile(wb, 'OverallSummary.xlsx');
+    };
+
     // const exportToExcel = () => {
     //     const header = columns.map((column) => column.Header);
     //     const dataToExport = tableData.map((row) => columns.map((column) => row[column.accessor]));
-      
+
     //     const wb = XLSX.utils.book_new();
-      
+
     //     // Create a worksheet
     //     const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
-      
+
     //     // Custom cell styling for header
     //     const headerStyle = {
     //       fill: { fgColor: { rgb: 'FFFF00' } }, // Yellow background color
     //       font: { bold: true }, // Bold text
     //     };
-      
+
     //     // Custom cell styling for "% Achieve" column
     //     const percentAchieveStyle = {
     //       fill: { fgColor: { rgb: 'FF0000' } }, // Red background color
     //     };
-      
+
     //     const range = XLSX.utils.decode_range(ws['!ref']);
-      
+
     //     // Apply styling to headers
     //     for (let C = range.s.c; C <= range.e.c; ++C) {
     //       const headerCell = XLSX.utils.encode_cell({ r: range.s.r, c: C });
     //       ws[headerCell].s = headerStyle;
     //     }
-      
+
     //     // Find the index of the "% Achieve" column
     //     const percentAchieveColumnIndex = columns.findIndex((column) => column.Header === '% Achieve');
-      
+
     //     // Apply styling to the "% Achieve" column
     //     if (percentAchieveColumnIndex !== -1) {
     //       for (let R = range.s.r + 1; R <= range.e.r; ++R) {
@@ -311,14 +312,14 @@ function OverAllUsingDataTable() {
     //         ws[percentAchieveCell].s = percentAchieveStyle;
     //       }
     //     }
-      
+
     //     // Add the worksheet to the workbook
     //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      
+
     //     // Save the workbook to a file
     //     XLSX.writeFile(wb, 'exported-data.xlsx');
     //   };
-      
+
 
 
 
@@ -375,6 +376,10 @@ function OverAllUsingDataTable() {
 
     return (
         <>
+
+            <DataTableReact />
+            <span className='heading ps-5 pe-5'>Overall Summary</span>
+
             <ReactTable
                 data={tableData}
                 columns={columns}
@@ -425,7 +430,7 @@ function OverAllUsingDataTable() {
                         };
                     }
                     return {};
-                   
+
                 }}
             />
             <button onClick={exportToExcel}>Export to Excel</button>

@@ -4,12 +4,12 @@ import ReactTable from 'react-table-6';
 import * as XLSX from 'xlsx';
 import DataTableReact from './DataTableReact';
 
-function TltmInd() {
+function TltmExclude() {
     const [tltmdata, settltmdata] = useState([]);
 
     useEffect(() => {
         async function fetchTlTmData() {
-            const resData = await axios.get('http://localhost:7000/dsr_report/tltm-in');
+            const resData = await axios.get('http://localhost:7000/dsr_report/Excluding-TL');
             settltmdata(resData.data);
         }
         fetchTlTmData();
@@ -25,14 +25,22 @@ function TltmInd() {
                     const isSameAsPrevious =
                         row.index > 0 &&
                         row.original.SalesManager === tltmdata[row.index - 1].SalesManager;
+                    const isSameAsNext =
+                        row.index < tltmdata.length - 1 &&
+                        row.original.SalesManager === tltmdata[row.index + 1].SalesManager;
 
-                    if (isSameAsPrevious) {
+                    if (isSameAsPrevious && isSameAsNext) {
                         return null;
+                    }
+
+                    if (!isSameAsNext) {
+                        return  <div className='total-cell'>{`Total ${row.value}`}</div>;
                     }
 
                     return row.value;
                 },
             },
+
             {
                 Header: 'Team Manager',
                 accessor: 'TeamManager',
@@ -149,12 +157,12 @@ function TltmInd() {
             },
             {
                 Header: 'Coll-Reve',
-                accessor: 'CollectedRevenue',
+                accessor: 'AmountReceived',
                 width: 80,
             },
             {
                 Header: 'Bill-Reve',
-                accessor: 'BilledRevenue',
+                accessor: 'AmountBilled',
                 width: 80
             },
             {
@@ -193,18 +201,18 @@ function TltmInd() {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-        XLSX.writeFile(wb, 'TL-TM_Summary.xlsx');
+        XLSX.writeFile(wb, 'Exclude_TLTM.xlsx');
     };
 
     return (
         <>
          <DataTableReact />
-         <span  className='heading ps-5 pe-5'>TL /TM- Summary Report ( Individual Admission Count)</span>
+         <span  className='heading ps-5 pe-5'>TL - Summary ( Excluding TL Admission Count)</span>
 
             <ReactTable
                 data={tltmdata}
                 columns={columns}
-                defaultPageSize={32}
+                defaultPageSize={25}
                 pageSizeOptions={[10, 20, 50, 100]}
                 getTheadThProps={(state, rowInfo, column) => ({
                     style: {
@@ -229,4 +237,4 @@ function TltmInd() {
     )
 }
 
-export default TltmInd
+export default TltmExclude;

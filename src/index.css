@@ -75,3 +75,10 @@ code {
   z-index: 1;
   background-color: white; /* Ensure it covers the entire height of the table */
 }
+
+.heading{
+  background:#9c4a10;
+  border: 2px solid black;
+  border-radius: 15px;
+  color:#ffffff;
+}

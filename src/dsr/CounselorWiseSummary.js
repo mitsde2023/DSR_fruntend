@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import 'react-table-6/react-table.css';
 import * as XLSX from 'xlsx';
+import DataTableReact from './DataTableReact';
 
 function CounselorWiseSummary() {
   const [data, setData] = useState([]);
@@ -280,7 +281,7 @@ function CounselorWiseSummary() {
     XLSX.utils.book_append_sheet(wb, ws, 'data');
 
     // Save the workbook
-    XLSX.writeFile(wb, 'api_data.xlsx');
+    XLSX.writeFile(wb, 'CounselorWiseSummary.xlsx');
   };
 
 
@@ -288,12 +289,11 @@ function CounselorWiseSummary() {
   return (
 
     <div className='m-2'>
-      <div className='d-flex'>
-        <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall</Link></button>
-        <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
-        <button className='btn btn-primary ms-2'><Link className='text-white' to={'/tltm'}>Counselor</Link></button>
+ <DataTableReact />
 
-      </div>
+        <span  className='heading ps-5 pe-5'>Counselor Wise Summary</span>
+
+
       <ReactTable
         data={data}
         columns={columns}
@@ -316,4 +316,4 @@ function CounselorWiseSummary() {
   )
 }
 
-export default CounselorWiseSummary;
+export default CounselorWiseSummary

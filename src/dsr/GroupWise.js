@@ -4,13 +4,13 @@ import ReactTable from 'react-table-6';
 import * as XLSX from 'xlsx';
 import DataTableReact from './DataTableReact';
 
-function TltmInd() {
-    const [tltmdata, settltmdata] = useState([]);
+function GroupWise() {
+    const [grupdata, setGroupdata] = useState([]);
 
     useEffect(() => {
         async function fetchTlTmData() {
-            const resData = await axios.get('http://localhost:7000/dsr_report/tltm-in');
-            settltmdata(resData.data);
+            const resData = await axios.get('http://localhost:7000/dsr_report/group-wise-overall');
+            setGroupdata(resData.data);
         }
         fetchTlTmData();
     }, [])
@@ -18,44 +18,35 @@ function TltmInd() {
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Asst. Manager',
-                accessor: 'SalesManager',
+                Header: 'MITSDE',
+                accessor: 'MITSDE',
                 width: 130,
                 Cell: (row) => {
-                    const isSameAsPrevious =
-                        row.index > 0 &&
-                        row.original.SalesManager === tltmdata[row.index - 1].SalesManager;
-
-                    if (isSameAsPrevious) {
-                        return null;
+                    if (row.index === 1) {
+                        return <div style={{ fontWeight: "bold", border: "1px solid red" }}>{row.value}</div>; // Display "MITSDE" in the second row
                     }
-
-                    return row.value;
+                    return null; // Hide "MITSDE" for other rows
                 },
             },
+
             {
-                Header: 'Team Manager',
-                accessor: 'TeamManager',
-                width: 140,
+                Header: 'Group',
+                accessor: 'Group',
+                width: 100,
                 Cell: (row) => {
-                    const isSameAsPrevious =
-                        row.index > 0 &&
-                        row.original.TeamManager === tltmdata[row.index - 1].TeamManager;
-
-                    if (isSameAsPrevious) {
-                        return null;
+                    if (row.value === 'Grand Total') {
+                        return null; // Hide the "Grand Total" row
                     }
-
-                    return row.value;
+                    return row.value; // Display other group values
                 },
             }
 
 
             ,
             {
-                Header: 'Team Leader',
-                accessor: 'TeamLeaders',
-                width: 130,
+                Header: 'Team Leaders',
+                accessor: 'Group',
+                width: 100,
             },
             {
                 Header: 'count',
@@ -140,7 +131,7 @@ function TltmInd() {
             {
                 Header: 'T-Lead',
                 accessor: 'TotalLead',
-                width: 50,
+                width: 80,
             },
             {
                 Header: '% Conversion',
@@ -183,28 +174,28 @@ function TltmInd() {
                 width: 50,
             }
         ],
-        [tltmdata]
+        [grupdata]
     );
     const exportToExcel = () => {
         const header = columns.map((column) => column.Header);
-        const dataToExport = tltmdata.map((row) => columns.map((column) => row[column.accessor]));
+        const dataToExport = grupdata.map((row) => columns.map((column) => row[column.accessor]));
 
         const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-        XLSX.writeFile(wb, 'TL-TM_Summary.xlsx');
+        XLSX.writeFile(wb, 'Group_Wise_Summary.xlsx');
     };
 
     return (
         <>
-         <DataTableReact />
-         <span  className='heading ps-5 pe-5'>TL /TM- Summary Report ( Individual Admission Count)</span>
 
+            <DataTableReact />
+            <span className='heading ps-5 pe-5'>Group Wise Overall Summary</span>
             <ReactTable
-                data={tltmdata}
+                data={grupdata}
                 columns={columns}
-                defaultPageSize={32}
+                defaultPageSize={7}
                 pageSizeOptions={[10, 20, 50, 100]}
                 getTheadThProps={(state, rowInfo, column) => ({
                     style: {
@@ -214,7 +205,7 @@ function TltmInd() {
                 })}
                 className="-striped -highlight custom-table p-2"
                 getTrProps={(state, rowInfo) => {
-                    if (rowInfo && rowInfo.index === tltmdata.length - 1) {
+                    if (rowInfo && rowInfo.index === grupdata.length - 1) {
                         return {
                             className: 'last-row',
                         };
@@ -224,9 +215,8 @@ function TltmInd() {
 
             />
             <button onClick={exportToExcel}>Export to Excel</button>
-
         </>
     )
 }
 
-export default TltmInd
+export default GroupWise;
