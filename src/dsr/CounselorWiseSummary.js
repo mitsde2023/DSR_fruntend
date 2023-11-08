@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table-6';
-import { useTable, useBlockLayout } from "react-table";
-import styled from "styled-components";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import 'react-table-6/react-table.css';
@@ -294,6 +292,7 @@ function CounselorWiseSummary() {
         <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall</Link></button>
         <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
         <button className='btn btn-primary ms-2'><Link className='text-white' to={'/tltm'}>Counselor</Link></button>
+
       </div>
       <ReactTable
         data={data}
