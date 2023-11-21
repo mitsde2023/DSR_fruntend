@@ -1,26 +1,145 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import * as XLSX from 'xlsx';
-import DataTableReact from './DataTableReact';
 
 function TltmExclude() {
     const [tltmdata, settltmdata] = useState([]);
+    const [filterdata, setFilterData] = useState([]);
+    const [selectedSalesManager, setSelectedSalesManager] = useState('');
+    const [selectedTeamManager, setSelectedTeamManager] = useState('');
+    const [selectedTeamLeader, setSelectedTeamLeader] = useState('');
 
     useEffect(() => {
-        async function fetchTlTmData() {
-            const resData = await axios.get('http://localhost:7000/dsr_report/Excluding-TL');
-            settltmdata(resData.data);
+        async function fetchHierarchyData() {
+            try {
+                const hierarchyData = await axios.get('http://localhost:7000/dsr_report/hierarchical-data-filter');
+                setFilterData(hierarchyData.data);
+            } catch (error) {
+                console.error('Error fetching hierarchical data:', error);
+            }
         }
+
+        fetchHierarchyData();
+    }, []);
+
+    const handleSalesManagerChange = (event) => {
+        const value = event.target.value;
+        localStorage.setItem('selectedSalesManager', value);
+        localStorage.removeItem('selectedTeamManager');
+        localStorage.removeItem('selectedTeamLeader');
+        setSelectedSalesManager(value);
+        setSelectedTeamManager('');
+        setSelectedTeamLeader('');
+    };
+
+    const handleTeamManagerChange = (event) => {
+        const value = event.target.value;
+        localStorage.setItem('selectedTeamManager', value);
+        localStorage.removeItem('selectedTeamLeader');
+        setSelectedTeamManager(value);
+        setSelectedTeamLeader('');
+    };
+
+    const handleTeamLeaderChange = (event) => {
+        const value = event.target.value;
+        localStorage.setItem('selectedTeamLeader', value);
+        setSelectedTeamLeader(value);
+    };
+
+    const renderSalesManagerDropdown = () => {
+        const salesManagers = Object.keys(filterdata);
+        const options = salesManagers.map((salesManager) => (
+            <option key={salesManager} value={salesManager}>
+                {salesManager}
+            </option>
+        ));
+
+        return (
+            <select value={selectedSalesManager} onChange={handleSalesManagerChange}>
+                <option value={''}>select manager</option>
+                {options}
+            </select>
+        );
+    };
+
+    const renderTeamManagerDropdown = () => {
+        if (!selectedSalesManager) return null;
+
+        const filtTeamManagers = filterdata[selectedSalesManager];
+        const filteredTeamManagers = Object.keys(filtTeamManagers)
+        const options = filteredTeamManagers.map((teamManager) => (
+            <option key={teamManager} value={teamManager}>
+                {teamManager}
+            </option>
+        ));
+
+        return (
+            <select value={selectedTeamManager} onChange={handleTeamManagerChange}>
+                <option value={''}>select Team manager</option>
+                {options}
+            </select>
+        );
+    };
+
+    const renderTeamLeaderDropdown = () => {
+        if (!selectedSalesManager || !selectedTeamManager) return null;
+
+        const filtTeamLeaders = filterdata[selectedSalesManager][selectedTeamManager];
+        const filteredTeamLeaders = Object.keys(filtTeamLeaders)
+        const options = filteredTeamLeaders.map((teamLeader) => (
+            <option key={teamLeader} value={teamLeader}>
+                {teamLeader}
+            </option>
+        ));
+
+        return (
+            <select value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
+                <option value={''}>select Team Leader</option>
+                {options}
+            </select>
+        );
+    };
+    // console.log(selectedSalesManager, selectedTeamManager, selectedTeamLeader, 112)
+
+    useEffect(() => {
+        // const selectedSalesManager = localStorage.getItem('selectedSalesManager');
+        // const selectedTeamManager = localStorage.getItem('selectedTeamManager');
+        // const selectedTeamLeader = localStorage.getItem('selectedTeamLeader');
+        // console.log(selectedSalesManager, selectedTeamManager, selectedTeamLeader, 13);
+
+        const params = {
+            selectedSalesManager,
+            selectedTeamManager,
+            selectedTeamLeader,
+        };
+
+        const queryString = Object.keys(params)
+            .filter(key => params[key] !== null && params[key] !== undefined)
+            .map(key => `${key}=${encodeURIComponent(params[key])}`)
+            .join('&');
+
+        const fetchTlTmData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:7000/dsr_report/Excluding-TL?${queryString}`);
+                const tlTmData = response.data;
+                settltmdata(tlTmData);
+            } catch (error) {
+                console.error('Error fetching TL-TM data:', error);
+            }
+        };
+
         fetchTlTmData();
-    }, [])
+    }, [selectedSalesManager, selectedTeamManager, selectedTeamLeader]);
+
 
     const columns = React.useMemo(
         () => [
             {
                 Header: 'Asst. Manager',
                 accessor: 'SalesManager',
-                width: 130,
+                width: 120,
                 Cell: (row) => {
                     const isSameAsPrevious =
                         row.index > 0 &&
@@ -34,7 +153,7 @@ function TltmExclude() {
                     }
 
                     if (!isSameAsNext) {
-                        return  <div className='total-cell'>{`Total ${row.value}`}</div>;
+                        return <div className='total-cell'>{`Total ${row.value}`}</div>;
                     }
 
                     return row.value;
@@ -78,7 +197,7 @@ function TltmExclude() {
             {
                 Header: 'Admissions',
                 accessor: 'Admissions',
-                width: 100,
+                width: 90,
                 Cell: ({ value }) => {
                     return <div>{value}</div>;
                 },
@@ -153,7 +272,7 @@ function TltmExclude() {
             {
                 Header: '% Conversion',
                 accessor: '%Conversion',
-                width: 100,
+                width: 90,
             },
             {
                 Header: 'Coll-Reve',
@@ -168,28 +287,65 @@ function TltmExclude() {
             {
                 Header: 'C_PSR',
                 accessor: 'C_PSR',
-                width: 70,
+                width: 65,
             },
             {
                 Header: 'B_PSR',
                 accessor: 'B_PSR',
-                width: 70,
+                width: 65,
             },
             {
                 Header: 'C_PCR',
                 accessor: 'C_PCR',
-                width: 70,
+                width: 65,
             },
             {
                 Header: 'B_PCR',
                 accessor: 'B_PCR',
-                width: 70,
+                width: 65,
             },
             {
                 Header: 'PCE',
                 accessor: 'PCE',
+                width: 40,
+            },
+            {
+                Header: 'Rank',
+                accessor: 'Rank',
                 width: 50,
-            }
+                getProps: (state, rowInfo, column) => {
+                    if (rowInfo && rowInfo.original) {
+                        // const rolesPresent = ['AsstManager', 'TeamManager', 'TeamLeader'].filter(
+                        //     (role) => rowInfo.original[role]
+                        // );
+
+                        let backgroundColor = 'white'; // Default background color
+
+                        // Check the rank and set background color accordingly
+                        if (rowInfo.original.Rank === 1 || rowInfo.original.Rank === 2 || rowInfo.original.Rank === 3) {
+                            backgroundColor = 'green'; // Top 3 ranks are green
+                        }
+                        // else if (rowInfo.original.Rank > 3 && rowInfo.original.Rank <= 5) {
+                        //     backgroundColor = '#f0ab0a'; // Ranks 4 and 5 are orange
+                        // }
+                        else if (rowInfo.original.Rank > 3) {
+                            backgroundColor = 'red'; // Ranks greater than 5 are red
+                        }
+
+                        if (rowInfo.viewIndex !== state.sortedData.length - 1) {
+                            return {
+                                style: {
+                                    background: backgroundColor,
+                                    color: 'white',
+                                },
+                            };
+                        }
+                    }
+
+                    return {};
+                },
+            },
+
         ],
         [tltmdata]
     );
@@ -206,8 +362,25 @@ function TltmExclude() {
 
     return (
         <>
-         <DataTableReact />
-         <span  className='heading ps-5 pe-5'>TL - Summary ( Excluding TL Admission Count)</span>
+            <div className='m-2 d-flex'>
+                <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
+                <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
+                <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+                <div className='ps-5 d-flex'>
+                    <div className='ps-2'>{renderSalesManagerDropdown()}</div>
+                    <div className='ps-2'>{renderTeamManagerDropdown()}</div>
+                    <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+                </div>
+            </div>
+
+            <span className='heading ps-5 pe-5'>TL - Summary ( Excluding TL Admission Count)</span>
+            {/* <div className='ps-5 d-flex'>
+                <div className='ps-2'>{renderSalesManagerDropdown()}</div>
+                <div className='ps-2'>{renderTeamManagerDropdown()}</div>
+                <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+            </div> */}
 
             <ReactTable
                 data={tltmdata}
@@ -231,7 +404,7 @@ function TltmExclude() {
                 }}
 
             />
-            <button onClick={exportToExcel}>Export to Excel</button>
+            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
 
         </>
     )

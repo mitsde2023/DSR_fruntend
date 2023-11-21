@@ -4,14 +4,127 @@ import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import DataTableReact from './DataTableReact';
+import { Link } from 'react-router-dom';
 
 function OverAllUsingDataTable() {
     const [data, setData] = useState([]);
+    const [filterdata, setFilterData] = useState([]);
+    const [selectedSalesManager, setSelectedSalesManager] = useState('');
+    const [selectedTeamManager, setSelectedTeamManager] = useState('');
+    const [selectedTeamLeader, setSelectedTeamLeader] = useState('');
+
     useEffect(() => {
+        async function fetchHierarchyData() {
+            try {
+                const hierarchyData = await axios.get('http://localhost:7000/dsr_report/hierarchical-data-filter');
+                setFilterData(hierarchyData.data);
+            } catch (error) {
+                console.error('Error fetching hierarchical data:', error);
+            }
+        }
+
+        fetchHierarchyData();
+    }, []);
+
+    const handleSalesManagerChange = (event) => {
+        const value = event.target.value;
+        // localStorage.setItem('selectedSalesManager', value);
+        // localStorage.removeItem('selectedTeamManager');
+        // localStorage.removeItem('selectedTeamLeader');
+        setSelectedSalesManager(value);
+        setSelectedTeamManager('');
+        setSelectedTeamLeader('');
+    };
+
+    const handleTeamManagerChange = (event) => {
+        const value = event.target.value;
+        // localStorage.setItem('selectedTeamManager', value);
+        // localStorage.removeItem('selectedTeamLeader');
+        setSelectedTeamManager(value);
+        setSelectedTeamLeader('');
+    };
+
+    const handleTeamLeaderChange = (event) => {
+        const value = event.target.value;
+        // localStorage.setItem('selectedTeamLeader', value);
+        setSelectedTeamLeader(value);
+    };
+
+    const renderSalesManagerDropdown = () => {
+        const salesManagers = Object.keys(filterdata);
+        const options = salesManagers.map((salesManager) => (
+            <option key={salesManager} value={salesManager}>
+                {salesManager}
+            </option>
+        ));
+
+        return (
+            <select value={selectedSalesManager} onChange={handleSalesManagerChange}>
+                <option value={''}>select manager</option>
+                {options}
+            </select>
+        );
+    };
+
+    const renderTeamManagerDropdown = () => {
+        if (!selectedSalesManager) return null;
+
+        const filtTeamManagers = filterdata[selectedSalesManager];
+        const filteredTeamManagers = Object.keys(filtTeamManagers)
+        const options = filteredTeamManagers.map((teamManager) => (
+            <option key={teamManager} value={teamManager}>
+                {teamManager}
+            </option>
+        ));
+
+        return (
+            <select value={selectedTeamManager} onChange={handleTeamManagerChange}>
+                <option value={''}>select Team manager</option>
+                {options}
+            </select>
+        );
+    };
+
+    const renderTeamLeaderDropdown = () => {
+        if (!selectedSalesManager || !selectedTeamManager) return null;
+
+        const filtTeamLeaders = filterdata[selectedSalesManager][selectedTeamManager];
+        const filteredTeamLeaders = Object.keys(filtTeamLeaders)
+        const options = filteredTeamLeaders.map((teamLeader) => (
+            <option key={teamLeader} value={teamLeader}>
+                {teamLeader}
+            </option>
+        ));
+
+        return (
+            <select value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
+                <option value={''}>select Team Leader</option>
+                {options}
+            </select>
+        );
+    };
+    // console.log(selectedSalesManager, selectedTeamManager, selectedTeamLeader, 112)
+
+    useEffect(() => {
+        // const selectedSalesManager = localStorage.getItem('selectedSalesManager');
+        // const selectedTeamManager = localStorage.getItem('selectedTeamManager');
+        // const selectedTeamLeader = localStorage.getItem('selectedTeamLeader');
+        // console.log(selectedSalesManager, selectedTeamManager, selectedTeamLeader, 15);
+
+        const params = {
+            selectedSalesManager,
+            selectedTeamManager,
+            selectedTeamLeader,
+        };
+
+        const queryString = Object.keys(params)
+            .filter(key => params[key] !== null && params[key] !== undefined)
+            .map(key => `${key}=${encodeURIComponent(params[key])}`)
+            .join('&');
+
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:7000/dsr_report/react-table-data');
+                const response = await axios.get(`http://localhost:7000/dsr_report/react-table-data?${queryString}`);
                 const allRows = response.data;
                 const lastTwoRows = allRows.slice(0, -2); // Remove the last two rows
                 const lastRow = allRows.slice(-1); // Get the last row
@@ -21,8 +134,10 @@ function OverAllUsingDataTable() {
                 console.error('Error fetching data:', error);
             }
         };
+
         fetchData();
-    }, []);
+    }, [selectedSalesManager, selectedTeamManager, selectedTeamLeader]);
+
 
     const columns = React.useMemo(
         () => [
@@ -274,55 +389,6 @@ function OverAllUsingDataTable() {
         XLSX.writeFile(wb, 'OverallSummary.xlsx');
     };
 
-    // const exportToExcel = () => {
-    //     const header = columns.map((column) => column.Header);
-    //     const dataToExport = tableData.map((row) => columns.map((column) => row[column.accessor]));
-
-    //     const wb = XLSX.utils.book_new();
-
-    //     // Create a worksheet
-    //     const ws = XLSX.utils.aoa_to_sheet([header, ...dataToExport]);
-
-    //     // Custom cell styling for header
-    //     const headerStyle = {
-    //       fill: { fgColor: { rgb: 'FFFF00' } }, // Yellow background color
-    //       font: { bold: true }, // Bold text
-    //     };
-
-    //     // Custom cell styling for "% Achieve" column
-    //     const percentAchieveStyle = {
-    //       fill: { fgColor: { rgb: 'FF0000' } }, // Red background color
-    //     };
-
-    //     const range = XLSX.utils.decode_range(ws['!ref']);
-
-    //     // Apply styling to headers
-    //     for (let C = range.s.c; C <= range.e.c; ++C) {
-    //       const headerCell = XLSX.utils.encode_cell({ r: range.s.r, c: C });
-    //       ws[headerCell].s = headerStyle;
-    //     }
-
-    //     // Find the index of the "% Achieve" column
-    //     const percentAchieveColumnIndex = columns.findIndex((column) => column.Header === '% Achieve');
-
-    //     // Apply styling to the "% Achieve" column
-    //     if (percentAchieveColumnIndex !== -1) {
-    //       for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-    //         const percentAchieveCell = XLSX.utils.encode_cell({ r: R, c: percentAchieveColumnIndex });
-    //         ws[percentAchieveCell].s = percentAchieveStyle;
-    //       }
-    //     }
-
-    //     // Add the worksheet to the workbook
-    //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    //     // Save the workbook to a file
-    //     XLSX.writeFile(wb, 'exported-data.xlsx');
-    //   };
-
-
-
-
 
     const filteredData = data.filter(
         (row) => row.AsstManager && !row.TeamManager && !row.TeamLeader
@@ -376,9 +442,25 @@ function OverAllUsingDataTable() {
 
     return (
         <>
+ <div className='m-2 d-flex'>
+                <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
+                <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
+                <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+                <div className='ps-5 d-flex'>
+                    <div className='ps-2'>{renderSalesManagerDropdown()}</div>
+                    <div className='ps-2'>{renderTeamManagerDropdown()}</div>
+                    <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+                </div>
+            </div>
 
-            <DataTableReact />
             <span className='heading ps-5 pe-5'>Overall Summary</span>
+            {/* <div className='ps-5 d-flex'>
+                <div className='ps-2'>{renderSalesManagerDropdown()}</div>
+                <div className='ps-2'>{renderTeamManagerDropdown()}</div>
+                <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+            </div> */}
 
             <ReactTable
                 data={tableData}
@@ -433,8 +515,7 @@ function OverAllUsingDataTable() {
 
                 }}
             />
-            <button onClick={exportToExcel}>Export to Excel</button>
-
+            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
         </>
     );
 }

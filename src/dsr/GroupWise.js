@@ -1,12 +1,11 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 import ReactTable from 'react-table-6';
 import * as XLSX from 'xlsx';
-import DataTableReact from './DataTableReact';
 
 function GroupWise() {
     const [grupdata, setGroupdata] = useState([]);
-
     useEffect(() => {
         async function fetchTlTmData() {
             const resData = await axios.get('http://localhost:7000/dsr_report/group-wise-overall');
@@ -189,8 +188,15 @@ function GroupWise() {
 
     return (
         <>
+         <div className='m-2 d-flex'>
+                <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
+                <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
+                <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
+                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+            </div>
 
-            <DataTableReact />
+
             <span className='heading ps-5 pe-5'>Group Wise Overall Summary</span>
             <ReactTable
                 data={grupdata}
@@ -214,7 +220,7 @@ function GroupWise() {
                 }}
 
             />
-            <button onClick={exportToExcel}>Export to Excel</button>
+            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
         </>
     )
 }
