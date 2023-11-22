@@ -57,7 +57,7 @@ function CounselorWiseSummary() {
     ));
 
     return (
-      <select value={selectedSalesManager} onChange={handleSalesManagerChange}>
+      <select className='btn btn-outline-primary ms-1' value={selectedSalesManager} onChange={handleSalesManagerChange}>
         <option value={''}>select manager</option>
         {options}
       </select>
@@ -76,7 +76,7 @@ function CounselorWiseSummary() {
     ));
 
     return (
-      <select value={selectedTeamManager} onChange={handleTeamManagerChange}>
+      <select className='btn btn-outline-primary ms-1' value={selectedTeamManager} onChange={handleTeamManagerChange}>
         <option value={''}>select Team manager</option>
         {options}
       </select>
@@ -95,7 +95,7 @@ function CounselorWiseSummary() {
     ));
 
     return (
-      <select value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
+      <select className='btn btn-outline-primary ms-1' value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
         <option value={''}>select Team Leader</option>
         {options}
       </select>
@@ -394,28 +394,25 @@ function CounselorWiseSummary() {
 
   return (
 
-    <div className='m-2'>
-      <div className='m-2 d-flex'>
+    <>
+      <div className='m-1 d-flex pb-2'>
         <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
         <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
         <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
         <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
         <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
-        <div className='ps-5 d-flex'>
-          <div className='ps-2'>{renderSalesManagerDropdown()}</div>
-          <div className='ps-2'>{renderTeamManagerDropdown()}</div>
-          <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+        <div className='ps-2 d-flex'>
+          <div className='ms-1'>{renderSalesManagerDropdown()}</div>
+          <div className='ms-1'>{renderTeamManagerDropdown()}</div>
+          <div className='ms-1'>{renderTeamLeaderDropdown()}</div>
+
+          <button className='btn btn-primary ms-1' onClick={exportToExcel}>Export</button>
+
         </div>
       </div>
-
-      <span className='heading ps-5 pe-5'>Counselor Wise Summary</span>
-      {/* <div className='ps-5 d-flex'>
-        <div className='ps-2'>{renderSalesManagerDropdown()}</div>
-        <div className='ps-2'>{renderTeamManagerDropdown()}</div>
-        <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
-      </div> */}
-
-
+      <hr/>
+      <span className='heading ps-5 pe-5 p-1'>Counselor Wise Summary</span>
+    
       <ReactTable
         data={data}
         columns={columns}
@@ -430,11 +427,10 @@ function CounselorWiseSummary() {
           },
           className: 'custom-header',
         })}
-        className="-striped -highlight custom-table"
+        className="-striped -highlight custom-table p-2"
       />
 
-      <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
-    </div>
+    </>
   )
 }
 

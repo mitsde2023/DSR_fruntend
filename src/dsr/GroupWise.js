@@ -188,14 +188,15 @@ function GroupWise() {
 
     return (
         <>
-         <div className='m-2 d-flex'>
+            <div className='m-2 d-flex pb-2'>
                 <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
                 <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
                 <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
                 <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
                 <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+                <button className='btn btn-primary ms-5' onClick={exportToExcel}>Export to Excel</button>
             </div>
-
+<hr/>
 
             <span className='heading ps-5 pe-5'>Group Wise Overall Summary</span>
             <ReactTable
@@ -220,7 +221,7 @@ function GroupWise() {
                 }}
 
             />
-            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
+          
         </>
     )
 }

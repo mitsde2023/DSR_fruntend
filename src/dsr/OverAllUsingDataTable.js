@@ -59,7 +59,7 @@ function OverAllUsingDataTable() {
         ));
 
         return (
-            <select value={selectedSalesManager} onChange={handleSalesManagerChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedSalesManager} onChange={handleSalesManagerChange}>
                 <option value={''}>select manager</option>
                 {options}
             </select>
@@ -78,7 +78,7 @@ function OverAllUsingDataTable() {
         ));
 
         return (
-            <select value={selectedTeamManager} onChange={handleTeamManagerChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedTeamManager} onChange={handleTeamManagerChange}>
                 <option value={''}>select Team manager</option>
                 {options}
             </select>
@@ -97,7 +97,7 @@ function OverAllUsingDataTable() {
         ));
 
         return (
-            <select value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
                 <option value={''}>select Team Leader</option>
                 {options}
             </select>
@@ -331,6 +331,47 @@ function OverAllUsingDataTable() {
                 accessor: 'PCE',
                 width: 50,
             },
+            // {
+            //     Header: 'Rank',
+            //     accessor: 'Rank',
+            //     width: 50,
+            //     getProps: (state, rowInfo, column) => {
+            //         if (rowInfo && rowInfo.original) {
+            //             const rolesPresent = ['AsstManager', 'TeamManager', 'TeamLeader'].filter(
+            //                 (role) => rowInfo.original[role]
+            //             );
+
+            //             let backgroundColor = 'red'; // Default background color for one field parent
+
+            //             if (rolesPresent.length === 3 && rowInfo.original.Rank < 4) {
+            //                 backgroundColor = 'green'; // If 3 fields present and Rank < 4, set to green
+            //             } else if (rolesPresent.length === 2) {
+            //                 backgroundColor = '#f0ab0a';
+            //             } else if (rolesPresent.length === 1) {
+            //                 backgroundColor = '#25f21b';
+            //             }
+
+            //             if (rowInfo.viewIndex !== state.sortedData.length - 1) {
+            //                 return {
+            //                     style: {
+            //                         background: backgroundColor,
+            //                         color: "white"
+            //                     },
+            //                 };
+            //             }
+            //             if (rowInfo.viewIndex !== state.sortedData.length - 0) {
+            //                 return {
+            //                     style: {
+            //                         background: "white",
+            //                         color: "white"
+            //                     },
+            //                 };
+            //             }
+            //         }
+
+            //         return {};
+            //     },
+            // },
             {
                 Header: 'Rank',
                 accessor: 'Rank',
@@ -341,38 +382,34 @@ function OverAllUsingDataTable() {
                             (role) => rowInfo.original[role]
                         );
 
+                        // Check if any value is empty, null, or ' '
+                        const hasEmptyValue = Object.values(rowInfo.original).some(
+                            (value) => value === null || value === '' || (typeof value === 'string' && value.trim() === '')
+                        );
+
                         let backgroundColor = 'red'; // Default background color for one field parent
 
-                        if (rolesPresent.length === 3 && rowInfo.original.Rank < 4) {
-                            backgroundColor = 'green'; // If 3 fields present and Rank < 4, set to green
-                        } else if (rolesPresent.length === 2) {
-                            backgroundColor = '#f0ab0a';
-                        } else if (rolesPresent.length === 1) {
-                            backgroundColor = '#25f21b';
+                        if (!hasEmptyValue) {
+                            if (rolesPresent.length === 3 && rowInfo.original.Rank < 4) {
+                                backgroundColor = 'green'; // If 3 fields present and Rank < 4, set to green
+                            } else if (rolesPresent.length === 2) {
+                                backgroundColor = '#f0ab0a';
+                            } else if (rolesPresent.length === 1) {
+                                backgroundColor = '#25f21b';
+                            }
                         }
 
-                        if (rowInfo.viewIndex !== state.sortedData.length - 1) {
-                            return {
-                                style: {
-                                    background: backgroundColor,
-                                    color: "white"
-                                },
-                            };
-                        }
-                        if (rowInfo.viewIndex !== state.sortedData.length - 0) {
-                            return {
-                                style: {
-                                    background: "white",
-                                    color: "white"
-                                },
-                            };
-                        }
+                        return {
+                            style: {
+                                background: hasEmptyValue ? 'white' : backgroundColor,
+                                color: "white",
+                            },
+                        };
                     }
 
                     return {};
                 },
-            },
-
+            }
 
         ],
         [data]
@@ -442,20 +479,21 @@ function OverAllUsingDataTable() {
 
     return (
         <>
- <div className='m-2 d-flex'>
-                <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
-                <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
+            <div className='m-1 d-flex pb-2'>
+                <button className='btn btn-primary me-1 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
+                <button className='btn btn-primary me-1'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
                 <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
-                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
-                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
-                <div className='ps-5 d-flex'>
-                    <div className='ps-2'>{renderSalesManagerDropdown()}</div>
-                    <div className='ps-2'>{renderTeamManagerDropdown()}</div>
-                    <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+                <button className='btn btn-primary ms-1'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
+                <button className='btn btn-primary ms-1'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+                <div className='ps-2 d-flex'>
+                    <div className='ms-1'>{renderSalesManagerDropdown()}</div>
+                    <div className='ms-1'>{renderTeamManagerDropdown()}</div>
+                    <div className='ms-1'>{renderTeamLeaderDropdown()}</div>
+                    <button className='btn btn-primary ms-1' onClick={exportToExcel}>Export</button>
                 </div>
             </div>
 
-            <span className='heading ps-5 pe-5'>Overall Summary</span>
+            <span className='heading ps-5 pe-5 m-2'>Overall Summary</span>
             {/* <div className='ps-5 d-flex'>
                 <div className='ps-2'>{renderSalesManagerDropdown()}</div>
                 <div className='ps-2'>{renderTeamManagerDropdown()}</div>
@@ -466,7 +504,7 @@ function OverAllUsingDataTable() {
                 data={tableData}
                 columns={columns}
                 defaultPageSize={42}
-                pageSizeOptions={[10, 20, 50, 100]}
+                pageSizeOptions={[10, 20, 45, 50, 75, 100, 200]}
                 getTheadThProps={(state, rowInfo, column) => ({
                     style: {
                         backgroundColor: 'yellow',
@@ -515,7 +553,6 @@ function OverAllUsingDataTable() {
 
                 }}
             />
-            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
         </>
     );
 }

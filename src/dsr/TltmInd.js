@@ -26,9 +26,9 @@ function TltmInd() {
 
     const handleSalesManagerChange = (event) => {
         const value = event.target.value;
-        localStorage.setItem('selectedSalesManager', value);
-        localStorage.removeItem('selectedTeamManager');
-        localStorage.removeItem('selectedTeamLeader');
+        // localStorage.setItem('selectedSalesManager', value);
+        // localStorage.removeItem('selectedTeamManager');
+        // localStorage.removeItem('selectedTeamLeader');
         setSelectedSalesManager(value);
         setSelectedTeamManager('');
         setSelectedTeamLeader('');
@@ -36,15 +36,15 @@ function TltmInd() {
 
     const handleTeamManagerChange = (event) => {
         const value = event.target.value;
-        localStorage.setItem('selectedTeamManager', value);
-        localStorage.removeItem('selectedTeamLeader');
+        // localStorage.setItem('selectedTeamManager', value);
+        // localStorage.removeItem('selectedTeamLeader');
         setSelectedTeamManager(value);
         setSelectedTeamLeader('');
     };
 
     const handleTeamLeaderChange = (event) => {
         const value = event.target.value;
-        localStorage.setItem('selectedTeamLeader', value);
+        // localStorage.setItem('selectedTeamLeader', value);
         setSelectedTeamLeader(value);
     };
 
@@ -57,7 +57,7 @@ function TltmInd() {
         ));
 
         return (
-            <select value={selectedSalesManager} onChange={handleSalesManagerChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedSalesManager} onChange={handleSalesManagerChange}>
                 <option value={''}>select manager</option>
                 {options}
             </select>
@@ -76,7 +76,7 @@ function TltmInd() {
         ));
 
         return (
-            <select value={selectedTeamManager} onChange={handleTeamManagerChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedTeamManager} onChange={handleTeamManagerChange}>
                 <option value={''}>select Team manager</option>
                 {options}
             </select>
@@ -95,7 +95,7 @@ function TltmInd() {
         ));
 
         return (
-            <select value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
+            <select className='btn btn-outline-primary ms-1' value={selectedTeamLeader} onChange={handleTeamLeaderChange}>
                 <option value={''}>select Team Leader</option>
                 {options}
             </select>
@@ -312,20 +312,21 @@ function TltmInd() {
 
     return (
         <>
-            <div className='m-2 d-flex'>
-                <button className='btn btn-primary me-2 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
-                <button className='btn btn-primary me-2'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
+            <div className='m-2 d-flex pb-2'>
+                <button className='btn btn-primary me-1 active'><Link className='text-white' to={'/'}>CounselorWiseSummary</Link></button>
+                <button className='btn btn-primary me-1'><Link className='text-white' to={'/overall-Data-Table'}>Overall Summary</Link></button>
                 <button className='btn btn-primary'><Link className='text-white' to={'/tltm'}>TL-TM</Link></button>
-                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
-                <button className='btn btn-primary ms-2'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
-                <div className='ps-5 d-flex'>
-                    <div className='ps-2'>{renderSalesManagerDropdown()}</div>
-                    <div className='ps-2'>{renderTeamManagerDropdown()}</div>
-                    <div className='ps-2'>{renderTeamLeaderDropdown()}</div>
+                <button className='btn btn-primary ms-1'><Link className='text-white' to={'/Excluding-TL'}>Excluding-TL</Link></button>
+                <button className='btn btn-primary ms-1'><Link className='text-white' to={'/group-wise'}>Group-Wise</Link></button>
+                <div className='ms-2 d-flex'>
+                    <div className='ms-1'>{renderSalesManagerDropdown()}</div>
+                    <div className='ms-1'>{renderTeamManagerDropdown()}</div>
+                    <div className='ms-1'>{renderTeamLeaderDropdown()}</div>
+                    <button className='btn btn-primary ms-1' onClick={exportToExcel}>Export</button>
                 </div>
             </div>
 
-            <span className='heading ps-5 pe-5'>TL /TM- Summary Report ( Individual Admission Count)</span>
+            <span className='heading ps-5 pe-5 m-2'>TL /TM- Summary Report ( Individual Admission Count)</span>
             {/* <div className='ps-5 d-flex'>
                 <div className='ps-2'>{renderSalesManagerDropdown()}</div>
                 <div className='ps-2'>{renderTeamManagerDropdown()}</div>
@@ -335,7 +336,7 @@ function TltmInd() {
                 data={tltmdata}
                 columns={columns}
                 defaultPageSize={32}
-                pageSizeOptions={[10, 20, 50, 100]}
+                pageSizeOptions={[10, 20, 35, 50, 75, 100]}
                 getTheadThProps={(state, rowInfo, column) => ({
                     style: {
                         backgroundColor: 'yellow',
@@ -353,7 +354,6 @@ function TltmInd() {
                 }}
 
             />
-            <button className='btn btn-primary m-2' onClick={exportToExcel}>Export to Excel</button>
 
         </>
     )

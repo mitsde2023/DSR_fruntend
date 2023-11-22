@@ -6,6 +6,7 @@ import OverAllUsingDataTable from './dsr/OverAllUsingDataTable';
 import TltmInd from './dsr/TltmInd';
 import TltmExclude from './dsr/TltmExclude';
 import GroupWise from './dsr/GroupWise';
+import UploadComponent from './dsr/UploadComponent';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route exact path="/tltm" element={<TltmInd />} />
           <Route exact path="/Excluding-TL" element={<TltmExclude />} />
           <Route exact path="/group-wise" element={<GroupWise />} />
+          <Route exact path="/Data-Files" element={<UploadComponent />} />
         </Routes>
       {/* </BrowserRouter> */}
 
